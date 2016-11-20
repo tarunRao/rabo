@@ -18,3 +18,7 @@ body {
   border-radius: 5px;
   border: 1px solid #e9e7e7;
 }
+.block-statements > table th,
+.block-form > table th {
+  background-color: #ccc;
+}

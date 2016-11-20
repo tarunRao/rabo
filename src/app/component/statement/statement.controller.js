@@ -14,9 +14,10 @@
 		vm.transactions	=	{};
 		vm.errors		=	[];
 		vm.uploadFile	=	uploadFile;
+		vm.resetForm	=	resetForm;
 		
 		function uploadFile() {
-			_resetForm();
+			_resetData();
 			
 			var uploadedFile	=	document.getElementById('importFile').files[0];
 			var ext				=	appConstant.REGEX_EXT.exec(uploadedFile.name.toLowerCase())[1];
@@ -33,8 +34,10 @@
 						_validateData(vm.data);
 					});
 			}
+		}
+		
+		function resetForm() {
 			
-			_resetForm();
 		}
 		
 		function _validateData(data) {
@@ -109,7 +112,7 @@
 			return ret;
 		}
 		
-		function _resetForm() {
+		function _resetData() {
 			vm.fileExt		=	'';
 			vm.transactions	=	{};
 			vm.errors		=	[];
