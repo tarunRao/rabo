@@ -5,9 +5,9 @@
 		.module('app.statement')
 		.controller('StatementController', StatementController);
 	
-	StatementController.$inject = ['fileReader', 'appConstant'];
+	StatementController.$inject = ['$scope', 'fileReader', 'appConstant'];
 	
-	function StatementController(fileReader, appConstant) {
+	function StatementController($scope, fileReader, appConstant) {
 		var vm			=	this;
 		vm.data			=	'';
 		vm.fileExt		=	'';
@@ -16,6 +16,8 @@
 		vm.uploadFile	=	uploadFile;
 		
 		function uploadFile() {
+			_resetForm();
+			
 			var uploadedFile	=	document.getElementById('importFile').files[0];
 			var ext				=	appConstant.REGEX_EXT.exec(uploadedFile.name.toLowerCase())[1];
 
@@ -87,12 +89,6 @@
 					break;
 				}			
 			}
-			
-			console.log(vm.transactions);
-			console.log(vm.errors);
-			
-			//To update live value
-            //vm.$apply(function() { vm.transactions });
 		}
 		
 		function _validateFile(file, ext) {
@@ -117,9 +113,6 @@
 			vm.fileExt		=	'';
 			vm.transactions	=	{};
 			vm.errors		=	[];
-			
-			//To update live value
-            //vm.$apply(function() { vm.transactions });
 		}
 	}
 })();

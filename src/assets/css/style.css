@@ -1,0 +1,20 @@
+html,
+body {
+  background: #fbfbfb;
+}
+.navbar {
+  background: #ff771d;
+}
+.navbar .navbar-header {
+  padding: 15px;
+  background: #fff;
+}
+.block-statements,
+.block-form {
+  background: #ffffff;
+  height: auto;
+  padding: 15px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 1px solid #e9e7e7;
+}
