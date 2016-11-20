@@ -10,6 +10,7 @@
 	function fileReader($q) {
 		this.read		=	readFile;
 		this.CsvToJson	=	CsvToJson;
+		this.XmlToJson	=	XmlToJson;
 		
 		function readFile(file) {
 			var deferred	=	$q.defer(),
@@ -24,6 +25,50 @@
 			function resolvePromise(e) {
 				deferred.resolve(e.target.result);
 			};
+		}
+		
+		function XmlToJson(node) {
+			var	data	= {};
+			//var parser	=	new DOMParser();
+			//node		=	parser.parseFromString(node, 'text/xml');
+
+			// append a value
+			function Add(name, value) {
+				if (data[name]) {
+					if (data[name].constructor != Array) {
+						data[name] = [data[name]];
+					}
+					data[name][data[name].length] = value;
+				}
+				else {
+					data[name] = value;
+				}
+			};
+
+			if(typeof node.attributes !== 'undefined')
+			{
+				// element attributes
+				var c, cn;
+				for (c = 0; cn = node.attributes[c]; c++) {
+					Add(cn.name, cn.value);
+				}
+			}
+
+			// child elements
+			for (c = 0; cn = node.childNodes[c]; c++) {
+				if (cn.nodeType == 1) {
+					if (cn.childNodes.length == 1 && cn.firstChild.nodeType == 3) {
+						// text value
+						Add(cn.nodeName, cn.firstChild.nodeValue);
+					}
+					else {
+						// sub-object
+						Add(cn.nodeName, XmlToJson(cn));
+					}
+				}
+			}
+
+			return data;
 		}
 		
 		function CsvToJson(strData, strDelimiter) {
