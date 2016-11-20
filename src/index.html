@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html ng-app="app">
+    <head>
+        <title ng-bind="title">Rabobank</title>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+
+        <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="assets/css/style.css">
+    </head>
+    <body>
+		
+		<header-directive></header-directive>
+		<statement-directive></statement-directive>
+
+        <!-- Bower Components -->
+        <script src="../bower_components/angular/angular.js"></script>
+        <script src="../bower_components/jquery/dist/jquery.js"></script>
+        <script src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
+
+        <!-- Inject Files -->
+        <script src="app/app.module.js"></script>
+		<script src="app/app.routes.js"></script>
+		
+		<script src="app/common/header/header.directive.js"></script>
+		
+		<script src="app/component/statement/statement.module.js"></script>
+		<script src="app/helper/app.file.service.js"></script>
+		<script src="app/component/statement/statement.directive.js"></script>
+		<script src="app/component/statement/statement.controller.js"></script>
+		
+    </body>
+</html>
