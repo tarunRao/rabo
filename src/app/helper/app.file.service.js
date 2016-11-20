@@ -9,7 +9,7 @@
 
 	function fileReader($q) {
 		this.read		=	readFile;
-		this.CSVToArray	=	CSVToArray;
+		this.CsvToJson	=	CsvToJson;
 		
 		function readFile(file) {
 			var deferred	=	$q.defer(),
@@ -26,11 +26,10 @@
 			};
 		}
 		
-		function CSVToArray(strData, strDelimiter) {
+		function CsvToJson(strData, strDelimiter) {
 			strDelimiter	=	(strDelimiter || ',');
 
-			// Create a regular expression to parse the CSV values.
-			var objPattern = new RegExp(
+			var objPattern	=	new RegExp(
 				(
 					// Delimiters.
 					"(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
@@ -44,66 +43,56 @@
 				"gi"
 				);
 
-			// Create an array to hold our data. Give the array
-			// a default empty first row.
+			//Format to Array
 			var arrData		=	[[]];
-
-			// Create an array to hold our individual pattern
-			// matching groups.
 			var arrMatches	=	null;
+			
+			while (arrMatches = objPattern.exec(strData)) {
 
-
-			// Keep looping over the regular expression matches
-			// until we can no longer find a match.
-			while (arrMatches = objPattern.exec( strData )) {
-
-				// Get the delimiter that was found.
 				var strMatchedDelimiter	=	arrMatches[ 1 ];
-
-				// Check to see if the given delimiter has a length
-				// (is not the start of string) and if it matches
-				// field delimiter. If id does not, then we know
-				// that this delimiter is a row delimiter.
-				if (
-					strMatchedDelimiter.length &&
-					strMatchedDelimiter !== strDelimiter
-					){
-
-					// Since we have reached a new row of data,
-					// add an empty row to our data array.
-					arrData.push( [] );
-
+				
+				if (strMatchedDelimiter.length && strMatchedDelimiter !== strDelimiter) {
+					arrData.push([]);
 				}
-
+				
 				var strMatchedValue;
 
-				// Now that we have our delimiter out of the way,
-				// let's check to see which kind of value we
-				// captured (quoted or unquoted).
-				if (arrMatches[ 2 ]){
-
-					// We found a quoted value. When we capture
-					// this value, unescape any double quotes.
-					strMatchedValue = arrMatches[ 2 ].replace(
-						new RegExp( "\"\"", "g" ),
-						"\""
-						);
-
+				if (arrMatches[ 2 ]) {
+					strMatchedValue	=	arrMatches[ 2 ].replace(new RegExp( "\"\"", "g" ), "\"");
 				} else {
-
-					// We found a non-quoted value.
-					strMatchedValue = arrMatches[ 3 ];
-
+					strMatchedValue =	arrMatches[ 3 ];
 				}
 
-
-				// Now that we have our value string, let's add
-				// it to the data array.
-				arrData[ arrData.length - 1 ].push( strMatchedValue );
+				arrData[ arrData.length - 1 ].push(strMatchedValue);
 			}
 
-			// Return the parsed data.
-			return( arrData );
+			//Convert to JSON
+			var jsonData	=	[];
+			var headings	=	arrData.length > 0 ? arrData[0] : '';
+			
+			if(headings.length > 0)
+			{
+				var i, j, iLen, jLen, values;
+				
+				iLen		=	arrData.length;
+				
+				for(i = 1; i < iLen; i++) {
+					values	=	{};
+					jLen	=	arrData[i].length;
+					
+					if(typeof arrData[i][0] === 'undefined' || arrData[i][0].length === 0)
+						continue;
+					
+					for(j = 0; j < jLen; j++) {
+						values[headings[j]]	=	arrData[i][j];
+					}
+					
+					jsonData.push(values);
+				}
+			}
+			
+			return jsonData;
 		}
+		
 	}
 })();
