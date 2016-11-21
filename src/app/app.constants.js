@@ -8,11 +8,11 @@
 			'EXT_XML': 'xml',
 			'REGEX_EXT': /(?:\.([^.]+))?$/,
 			'TRANSACTION_INDEXES' : {
-				'accountNo': 'Account Number',
+				'accountNumber': 'Account Number',
 				'description': 'Description',
 				'endBalance': 'End Balance',
 				'mutation': 'Mutation',
-				'idTransaction': 'Reference',
+				'reference': 'Reference',
 				'startBalance': 'Start Balance'
 			}
 		});

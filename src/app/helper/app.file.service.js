@@ -5,12 +5,13 @@
 		.module('app')
 		.service('fileReader', fileReader);
 
-	fileReader.$inject = ['$q'];
+	fileReader.$inject = ['$q', 'appConstant'];
 
-	function fileReader($q) {
-		this.read		=	readFile;
-		this.CsvToJson	=	CsvToJson;
-		this.XmlToJson	=	XmlToJson;
+	function fileReader($q, appConstant) {
+		var service			=	this;
+		service.read		=	readFile;
+		service.CsvToJson	=	CsvToJson;
+		service.XmlToJson	=	XmlToJson;
 		
 		function readFile(file) {
 			var deferred	=	$q.defer(),
@@ -27,11 +28,13 @@
 			};
 		}
 		
+		/*
+		 * Function to convert XML To JSON
+		 */
+		
 		function XmlToJson(node) {
 			var	data	= {};
-			//var parser	=	new DOMParser();
-			//node		=	parser.parseFromString(node, 'text/xml');
-
+			
 			// append a value
 			function Add(name, value) {
 				if (data[name]) {
@@ -70,6 +73,10 @@
 
 			return data;
 		}
+		
+		/*
+		 * Function to convert CSV To JSON
+		 */
 		
 		function CsvToJson(strData, strDelimiter) {
 			strDelimiter	=	(strDelimiter || ',');
@@ -117,26 +124,42 @@
 			
 			if(headings.length > 0)
 			{
-				var i, j, iLen, jLen, values;
+				var i, j, iLen, jLen, key, result;
 				
 				iLen		=	arrData.length;
 				
 				for(i = 1; i < iLen; i++) {
-					values	=	{};
+					result	=	{};
 					jLen	=	arrData[i].length;
 					
 					if(typeof arrData[i][0] === 'undefined' || arrData[i][0].length === 0)
 						continue;
 					
 					for(j = 0; j < jLen; j++) {
-						values[headings[j]]	=	arrData[i][j];
+						key			=	_getKeyByValue(appConstant.TRANSACTION_INDEXES, headings[j]);
+						result[key]	=	arrData[i][j];
 					}
 					
-					jsonData.push(values);
+					jsonData.push(result);
 				}
 			}
 			
 			return jsonData;
+		}
+		
+		/*
+		 * Private function to get valid key
+		 */
+		
+		function _getKeyByValue(obj, value) {
+			var prop;
+			
+			for(prop in obj) {
+				if(obj.hasOwnProperty(prop)) {
+					if(obj[prop] === value )
+						return prop;
+				}
+			}
 		}
 		
 	}

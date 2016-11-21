@@ -48,9 +48,9 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="(idTransaction, record) in vm.transactions">
-							<td>{{ idTransaction }}</td>
-							<td>{{ record['Description'] }}</td>
+						<tr ng-repeat="(reference, record) in vm.transactions">
+							<td>{{ reference }}</td>
+							<td>{{ record.description }}</td>
 						</tr>
 					</tbody>
 				</table>
@@ -74,8 +74,8 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat="record in vm.errors">
-							<td>{{ record['Reference'] }}</td>
-							<td>{{ record['Description'] }}</td>
+							<td>{{ record.reference }}</td>
+							<td>{{ record.description }}</td>
 						</tr>
 					</tbody>
 				</table>
