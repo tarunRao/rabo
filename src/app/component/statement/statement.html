@@ -5,6 +5,8 @@
 </div>
 <div class="container">
 	<div class="row">
+		
+		<!-- Block Form -->
 		<div class="col-sm-12 col-md-4">
 			<div class="block-form">
 				<h4 class="text-primary"><strong>Upload Form</strong></h4>
@@ -13,27 +15,32 @@
 				<hr/>
 				<br/>
 				<form class="">
-					<label for="inputEmail">Choose XML / CSV file</label>
+					<label for="inputEmail">Choose XML / CSV file</label><br/><br/>
 					<div class="row">
 						<div class="form-group col-sm-4 col-md-12">
 							<input type="file" class="form-control input-md" id="importFile" />
 						</div>
 						<div class="form-group col-sm-4 col-md-12">
-							<button class="btn btn-success form-control" ng-click = "vm.uploadFile()">upload</button>
+							<button class="btn btn-success btn-block btn-md" ng-click = "vm.uploadFile()">upload</button>
 						</div>
 						<div class="form-group col-sm-4 col-md-12">
-							<button class="btn btn-default form-control" type="reset" ng-click = "vm.resetForm()">Cancel</button>
+							<button class="btn btn-default btn-block btn-md" type="reset" ng-click = "vm.resetForm()">Reset</button>
 						</div>
 					</div>
 				</form>
+				<div class="alert alert-danger alert-dismissable" ng-show="vm.errorMessage">
+					<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+					{{ vm.errorMessage }}
+				</div>
 			</div>
 		</div>
 	
+		<!-- Block Valid Records -->
 		<div class="col-sm-12 col-md-4">
 			<div class="block-statements">
 				<h4 class="text-success"><strong>Valid Records</strong></h4>
 				<br/>
-				<table class="table table-striped table-responsive">
+				<table class="table table-striped table-responsive" ng-show="vm.canShowValid">
 					<thead>
 						<tr>
 							<th>Transaction Reference</th>
@@ -42,19 +49,23 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat="(idTransaction, record) in vm.transactions">
-							<td>{{idTransaction}}</td>
-							<td>{{record['Description']}}</td>
+							<td>{{ idTransaction }}</td>
+							<td>{{ record['Description'] }}</td>
 						</tr>
 					</tbody>
 				</table>
+				<div class="block-alt block-valid" ng-show=" ! vm.canShowValid">
+					No Records !
+				</div>
 			</div>
 		</div>
 	
-		<div class="col-sm-12 col-md-4 table-responsive">
+		<!-- Block Invalid Records -->
+		<div class="col-sm-12 col-md-4">
 			<div class="block-statements">
 				<h4 class="text-danger"><strong>Invalid Records</strong></h4>
 				<br/>
-				<table class="table table-striped" ng-show="vm.errors.length">
+				<table class="table table-striped table-responsive" ng-show="vm.errors.length">
 					<thead>
 						<tr>
 							<th>Transaction Reference</th>
@@ -63,11 +74,14 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat="record in vm.errors">
-							<td>{{record['Reference']}}</td>
-							<td>{{record['Description']}}</td>
+							<td>{{ record['Reference'] }}</td>
+							<td>{{ record['Description'] }}</td>
 						</tr>
 					</tbody>
 				</table>
+				<div class="block-alt block-invalid" ng-show=" ! vm.errors.length">
+					No Records !
+				</div>
 			</div>
 		</div>
 	</div>

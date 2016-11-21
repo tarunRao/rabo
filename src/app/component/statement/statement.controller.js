@@ -13,6 +13,8 @@
 		vm.fileExt		=	'';
 		vm.transactions	=	{};
 		vm.errors		=	[];
+		vm.canShowValid	=	false;
+		vm.errorMessage	=	false;
 		vm.uploadFile	=	uploadFile;
 		vm.resetForm	=	resetForm;
 		
@@ -20,27 +22,28 @@
 			_resetData();
 			
 			var uploadedFile	=	document.getElementById('importFile').files[0];
-			var ext				=	appConstant.REGEX_EXT.exec(uploadedFile.name.toLowerCase())[1];
-
-			if(_validateFile(uploadedFile, ext))
+			
+			if(_validateFile(uploadedFile))
 			{
+				console.log(uploadedFile);
 				fileReader
 					.read(uploadedFile)
 					.then(function(result) {
-						vm.data		=	ext === appConstant.EXT_CSV
+						vm.data		=	vm.fileExt === appConstant.EXT_CSV
 											? fileReader.CsvToJson(result)
 											: fileReader.XmlToJson(result);
 						
-						_validateData(vm.data);
+						_validateRecords(vm.data);
 					});
 			}
 		}
 		
 		function resetForm() {
-			
+			document.getElementById('importFile').value	=	null;
+			_resetData();
 		}
 		
-		function _validateData(data) {
+		function _validateRecords(data) {
 			var i, record, idTransaction;
 			var valueStart		=	0,
 				valueEnd		=	0,
@@ -88,24 +91,33 @@
 					}
 					
 				} catch(err) {
-					console.log(err);
+					vm.errorMessage	=	err;
 					break;
 				}			
 			}
+			
+			vm.canShowValid		=	Object.keys(vm.transactions).length > 0;
 		}
 		
-		function _validateFile(file, ext) {
-			var ret			=	true;
+		function _validateFile(file) {
+			var ret	=	true;
 			
 			try {
+				if(typeof file === 'undefined')
+					throw "Error file not found";
+					
 				if(typeof file.name === 'undefined' || file.name.length === 0)
-					throw "Error Invalid file";
+					throw "Error invalid file";
+				
+				var ext	=	appConstant.REGEX_EXT.exec(file.name.toLowerCase())[1];
 				
 				if(ext !== appConstant.EXT_CSV && ext !== appConstant.EXT_XML)
 					throw "Error Invalid file extension";
 				
+				vm.fileExt	=	ext;
+				
 			} catch(err) {
-				console.log(err);
+				vm.errorMessage	=	err;
 				ret	=	false;
 			}
 			
@@ -116,6 +128,8 @@
 			vm.fileExt		=	'';
 			vm.transactions	=	{};
 			vm.errors		=	[];
+			vm.canShowValid	=	false;
+			vm.errorMessage	=	false;
 		}
 	}
 })();
