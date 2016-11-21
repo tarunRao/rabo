@@ -117,7 +117,7 @@
 				var ext	=	appConstant.REGEX_EXT.exec(file.name.toLowerCase())[1];
 				
 				if(ext !== appConstant.EXT_CSV && ext !== appConstant.EXT_XML)
-					throw "Error Invalid file extension";
+					throw "Error Invalid file type";
 				
 				vm.fileExt	=	ext;
 				
