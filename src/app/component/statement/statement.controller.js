@@ -89,7 +89,7 @@
 					valueMutated	=	Number(record.mutation);
 					valueMutated	=	isNaN(valueMutated) ? 0 : valueMutated;
 					
-					if( ! vm.transactions[record.reference] && (valueStart + valueMutated) === valueEnd) {
+					if( ! vm.transactions[record.reference] && (valueStart + valueMutated).toFixed(2) == valueEnd) {
 						vm.transactions[record.reference]	=	record;
 					} else {
 						vm.errors.push(record);
