@@ -8,13 +8,7 @@
   "main": "",
   "license": "MIT",
   "private": true,
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
+  "ignore": [],
   "dependencies": {
     "angular": "^1.5.8",
     "angular-route": "^1.5.8",
