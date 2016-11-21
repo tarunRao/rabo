@@ -53,8 +53,9 @@
 		function _validateRecords(data) {
 			var i, record;
 			var valueStart		=	0,
-				valueEnd		=	0,
-				valueMutated	=	0;
+				valueEnd	=	0,
+				valueMutated	=	0,
+				duplicates	=	[];
 			
 			for(i in data)
 			{
@@ -89,10 +90,30 @@
 					valueMutated	=	Number(record.mutation);
 					valueMutated	=	isNaN(valueMutated) ? 0 : valueMutated;
 					
-					if( ! vm.transactions[record.reference] && (valueStart + valueMutated).toFixed(2) == valueEnd) {
-						vm.transactions[record.reference]	=	record;
-					} else {
+					if(typeof vm.transactions[record.reference] !== 'undefined') {
+						
+						//catch 1st duplicate
 						vm.errors.push(record);
+						vm.errors.push(vm.transactions[record.reference]);
+						delete vm.transactions[record.reference];
+						
+						//store for next occurences
+						duplicates.push(record.reference);
+						
+					} else if(duplicates.indexOf(record.reference) >= 0) {
+						
+						//cross check duplicate entries
+						vm.errors.push(record);
+						
+					} else if((valueStart + valueMutated).toFixed(2) != valueEnd) {
+						
+						//wrong end balance
+						vm.errors.push(record);
+						
+					} else {
+						
+						//good record
+						vm.transactions[record.reference]	=	record;
 					}
 					
 				} catch(err) {
