@@ -5,20 +5,66 @@
 		.module('app.statement')
 		.controller('StatementController', StatementController);
 	
-	StatementController.$inject = ['fileReader', 'appConstant'];
+	//Inject dependency - http service, fileReader service, constant
+	StatementController.$inject = ['$http', 'fileReader', 'appConstant'];
 	
-	function StatementController(fileReader, appConstant) {
-		var vm			=	this;
-		vm.data			=	'';
-		vm.fileExt		=	'';
-		vm.transactions	=	{};
-		vm.errors		=	[];
-		vm.canShowValid	=	false;
-		vm.errorMessage	=	false;
+	function StatementController($http, fileReader, appConstant) {
+		//init values
+		var vm				=	this;
+		vm.data				=	'';
+		vm.fileExt			=	'';
+		vm.validRecords		=	{};
+		vm.invalidRecords	=	[];
+		vm.canShowValid		=	false;
+		vm.errorMessage		=	false;
+		vm.appConstant		=	appConstant;
 		
+		//public functions
+		vm.loadFile		=	loadFile;
 		vm.uploadFile	=	uploadFile;
 		vm.resetForm	=	resetForm;
 		
+		/*
+		 * Function to load CSV / XML via $http service
+		 */
+		function loadFile(type) {
+			_resetData();
+			
+			var url		=	type === appConstant.TYPE_CSV ? appConstant.URL_CSV : appConstant.URL_XML;
+			
+			$http({method: 'GET', url: url})
+				.success(function(result, status, headers, config) {
+					//throw if error
+					if( ! result)
+					{
+						vm.errorMessage	=	'Empty records found';
+						return;
+					}
+					
+					//parse file based on type
+					if(type === appConstant.TYPE_CSV)
+					{
+						vm.data	=	fileReader.CsvToJson(result);
+					}
+					else
+					{
+						var parser	=	new DOMParser();
+						result		=	parser.parseFromString(result, 'text/xml');
+						vm.data		=	fileReader.XmlToJson(result);
+						vm.data		=	typeof vm.data.records !== 'undefined' ? vm.data.records.record : '';
+					}
+					
+					//validate records to match our criteria
+					_validateRecords(vm.data);
+				})
+				.error(function(data, status, headers, config) {
+					vm.errorMessage	=	'Error occurred while loading';
+				});
+		}
+		
+		/*
+		 * Function to upload file & parse
+		 */
 		function uploadFile() {
 			_resetData();
 			
@@ -26,13 +72,12 @@
 			
 			if(_validateFile(uploadedFile))
 			{
-				console.log(uploadedFile);
 				fileReader
 					.read(uploadedFile)
 					.then(function(result) {
+						
 						if(vm.fileExt === appConstant.EXT_CSV) {
 							vm.data		=	fileReader.CsvToJson(result);
-							console.log(vm.data);
 						} else {
 							var parser	=	new DOMParser();
 							result		=	parser.parseFromString(result, 'text/xml');
@@ -40,16 +85,26 @@
 							vm.data		=	typeof vm.data.records !== 'undefined' ? vm.data.records.record : '';
 						}
 						
+						//validating records
 						_validateRecords(vm.data);
 					});
 			}
 		}
 		
+		/*
+		 * Function to reset form
+		 */
 		function resetForm() {
 			document.getElementById('importFile').value	=	null;
 			_resetData();
 		}
 		
+		/*
+		 * Private function to validate records
+		 *  - check all fields exist
+		 *  - check unique reference
+		 *  - check end balance tally
+		 */
 		function _validateRecords(data) {
 			var i, record;
 			var valueStart		=	0,
@@ -90,12 +145,12 @@
 					valueMutated	=	Number(record.mutation);
 					valueMutated	=	isNaN(valueMutated) ? 0 : valueMutated;
 					
-					if(typeof vm.transactions[record.reference] !== 'undefined') {
+					if(typeof vm.validRecords[record.reference] !== 'undefined') {
 						
 						//catch 1st duplicate
-						vm.errors.push(record);
-						vm.errors.push(vm.transactions[record.reference]);
-						delete vm.transactions[record.reference];
+						vm.invalidRecords.push(record);
+						vm.invalidRecords.push(vm.validRecords[record.reference]);
+						delete vm.validRecords[record.reference];
 						
 						//store for next occurences
 						duplicates.push(record.reference);
@@ -103,17 +158,17 @@
 					} else if(duplicates.indexOf(record.reference) >= 0) {
 						
 						//cross check duplicate entries
-						vm.errors.push(record);
+						vm.invalidRecords.push(record);
 						
 					} else if((valueStart + valueMutated).toFixed(2) != valueEnd) {
 						
 						//wrong end balance
-						vm.errors.push(record);
+						vm.invalidRecords.push(record);
 						
 					} else {
 						
 						//good record
-						vm.transactions[record.reference]	=	record;
+						vm.validRecords[record.reference]	=	record;
 					}
 					
 				} catch(err) {
@@ -122,9 +177,12 @@
 				}			
 			}
 			
-			vm.canShowValid		=	Object.keys(vm.transactions).length > 0;
+			vm.canShowValid		=	Object.keys(vm.validRecords).length > 0;
 		}
 		
+		/*
+		 * Private function to validate uploaded file
+		 */
 		function _validateFile(file) {
 			var ret	=	true;
 			
@@ -150,10 +208,13 @@
 			return ret;
 		}
 		
+		/*
+		 * Private function to reset data
+		 */
 		function _resetData() {
 			vm.fileExt		=	'';
-			vm.transactions	=	{};
-			vm.errors		=	[];
+			vm.validRecords	=	{};
+			vm.invalidRecords		=	[];
 			vm.canShowValid	=	false;
 			vm.errorMessage	=	false;
 		}

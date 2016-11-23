@@ -5,31 +5,29 @@
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
-	<link rel="shortcut icon" href="">
+		<link rel="shortcut icon" href="">
         <link rel="stylesheet" href="assets/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="assets/css/style.css">
     </head>
     <body>
+		<!-- page content -->
+		<header ui-view="header"></header>
+		<div ui-view="content"></div>
 		
-		<header-directive></header-directive>
-		<statement-directive></statement-directive>
-
         <!-- Bower Components -->
         <script src="assets/lib/angular/angular.js"></script>
         <script src="assets/lib/jquery/dist/jquery.js"></script>
         <script src="assets/lib/bootstrap/dist/js/bootstrap.js"></script>
+		<script src="assets/lib/angular-ui-router/release/angular-ui-router.js"></script> 
 
         <!-- Inject Files -->
-        <script src="app/app.module.js"></script>
-		<script src="app/app.routes.js"></script>
-		<script src="app/app.constants.js"></script>
+        <script src="app/appModule.js"></script>
+		<script src="app/appRoutes.js"></script>
+		<script src="app/appConstants.js"></script>
 		
-		<script src="app/common/header/header.directive.js"></script>
-		
-		<script src="app/component/statement/statement.module.js"></script>
-		<script src="app/helper/app.file.service.js"></script>
-		<script src="app/component/statement/statement.directive.js"></script>
-		<script src="app/component/statement/statement.controller.js"></script>
+		<script src="app/component/statement/statementModule.js"></script>
+		<script src="app/helper/fileService.js"></script>
+		<script src="app/component/statement/statementController.js"></script>
 		
     </body>
 </html>
