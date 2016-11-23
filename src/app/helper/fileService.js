@@ -5,14 +5,19 @@
 		.module('app')
 		.service('fileReader', fileReader);
 
+	//Inject dependency - promist and constants
 	fileReader.$inject = ['$q', 'appConstant'];
-
+	
 	function fileReader($q, appConstant) {
+		//init values
 		var service			=	this;
 		service.read		=	readFile;
 		service.CsvToJson	=	CsvToJson;
 		service.XmlToJson	=	XmlToJson;
 		
+		/*
+		 * Function to read file
+		 */
 		function readFile(file) {
 			var deferred	=	$q.defer(),
 				reader		=	new FileReader();
@@ -29,25 +34,27 @@
 		}
 		
 		/*
-		 * Function to convert XML To JSON
+		 * Recursive Function to convert XML To JSON
 		 */
-		
 		function XmlToJson(node) {
-			var	data	= {};
+			var	data	=	{};
 			
-			// append a value
+			//function to append data
+			//----------------------------------->
 			function Add(name, value) {
 				if (data[name]) {
 					if (data[name].constructor != Array) {
-						data[name] = [data[name]];
+						data[name]	=	[data[name]];
 					}
-					data[name][data[name].length] = value;
+					data[name][data[name].length]	=	value;
 				}
 				else {
-					data[name] = value;
+					data[name]	=	value;
 				}
 			};
 
+			//check for node attributes
+			//----------------------------------->
 			if(typeof node.attributes !== 'undefined')
 			{
 				// element attributes
@@ -57,7 +64,8 @@
 				}
 			}
 
-			// child elements
+			//recursive check for child elements
+			//----------------------------------->
 			for (c = 0; cn = node.childNodes[c]; c++) {
 				if (cn.nodeType == 1) {
 					if (cn.childNodes.length == 1 && cn.firstChild.nodeType == 3) {
@@ -76,8 +84,8 @@
 		
 		/*
 		 * Function to convert CSV To JSON
+		 *  - default delimiter is comma(,)
 		 */
-		
 		function CsvToJson(strData, strDelimiter) {
 			strDelimiter	=	(strDelimiter || ',');
 
@@ -95,13 +103,14 @@
 				"gi"
 				);
 
-			//Format to Array
+			//Prasing CSV data to Array
+			//--------------------------->
 			var arrData		=	[[]];
 			var arrMatches	=	null;
 			
 			while (arrMatches = objPattern.exec(strData)) {
 
-				var strMatchedDelimiter	=	arrMatches[ 1 ];
+				var strMatchedDelimiter	=	arrMatches[1];
 				
 				if (strMatchedDelimiter.length && strMatchedDelimiter !== strDelimiter) {
 					arrData.push([]);
@@ -109,16 +118,17 @@
 				
 				var strMatchedValue;
 
-				if (arrMatches[ 2 ]) {
-					strMatchedValue	=	arrMatches[ 2 ].replace(new RegExp( "\"\"", "g" ), "\"");
+				if (arrMatches[2]) {
+					strMatchedValue	=	arrMatches[2].replace(new RegExp("\"\"", "g"), "\"");
 				} else {
-					strMatchedValue =	arrMatches[ 3 ];
+					strMatchedValue =	arrMatches[3];
 				}
 
 				arrData[ arrData.length - 1 ].push(strMatchedValue);
 			}
 
-			//Convert to JSON
+			//Convert Array result to JSON
+			//--------------------------->
 			var jsonData	=	[];
 			var headings	=	arrData.length > 0 ? arrData[0] : '';
 			
@@ -135,8 +145,9 @@
 					if(typeof arrData[i][0] === 'undefined' || arrData[i][0].length === 0)
 						continue;
 					
+					//using proper key names from constant
 					for(j = 0; j < jLen; j++) {
-						key			=	_getKeyByValue(appConstant.TRANSACTION_INDEXES, headings[j]);
+						key			=	_getKeyByValue(appConstant.RECORDS_INDEX, headings[j]);
 						result[key]	=	arrData[i][j];
 					}
 					
@@ -150,7 +161,6 @@
 		/*
 		 * Private function to get valid key
 		 */
-		
 		function _getKeyByValue(obj, value) {
 			var prop;
 			

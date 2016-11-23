@@ -1,19 +1,40 @@
-<div class="container-fluid">
+<section class="container-fluid">
 	<div class="page-header">
 		<h1 class="text-center">Rabobank Customer Statement Processor</h1>
 	</div>
-</div>
-<div class="container">
+</section>
+
+<section class="container">
 	<div class="row">
 		
 		<!-- Block Form -->
 		<div class="col-sm-12 col-md-4">
 			<div class="block-form">
-				<h4 class="text-primary"><strong>Upload Form</strong></h4>
-				<br/>
-				<p>Please upload a csv / xml file to validate and identify errors.</p>
+				<h4 class="text-primary"><strong>Form</strong></h4>
+				<p>Please upload a csv/xml file (or) alternativey load directly from server.</p>
 				<hr/>
-				<br/>
+				
+				<!-- load via http -->
+				<form class="">
+					<label for="inputEmail">Directly load from server</label><br/><br/>
+					<div class="row">
+						<div class="form-group col-xs-6">
+							<button class="btn btn-primary btn-block btn-md"
+									ng-click="statement.loadFile(statement.appConstant.TYPE_CSV)">
+								Load CSV
+							</button>
+						</div>
+						<div class="form-group col-xs-6">
+							<button class="btn btn-primary btn-block btn-md"
+									ng-click="statement.loadFile(statement.appConstant.TYPE_XML)">
+								Load XML
+							</button>
+						</div>
+					</div>
+				</form>
+				<hr/>
+				
+				<!-- load via file upload-->
 				<form class="">
 					<label for="inputEmail">Choose XML / CSV file</label><br/><br/>
 					<div class="row">
@@ -21,16 +42,18 @@
 							<input type="file" class="form-control input-md" id="importFile" />
 						</div>
 						<div class="form-group col-sm-4 col-md-12">
-							<button class="btn btn-success btn-block btn-md" ng-click = "vm.uploadFile()">upload</button>
+							<button class="btn btn-success btn-block btn-md" ng-click="statement.uploadFile()">upload</button>
 						</div>
 						<div class="form-group col-sm-4 col-md-12">
-							<button class="btn btn-default btn-block btn-md" type="reset" ng-click = "vm.resetForm()">Reset</button>
+							<button class="btn btn-default btn-block btn-md" type="reset" ng-click="statement.resetForm()">Reset</button>
 						</div>
+						
 					</div>
 				</form>
-				<div class="alert alert-danger alert-dismissable" ng-show="vm.errorMessage">
+				<br/>
+				<div class="alert alert-danger alert-dismissable" ng-show="statement.errorMessage">
 					<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-					{{ vm.errorMessage }}
+					{{ statement.errorMessage }}
 				</div>
 			</div>
 		</div>
@@ -40,7 +63,7 @@
 			<div class="block-statements">
 				<h4 class="text-success"><strong>Valid Records</strong></h4>
 				<br/>
-				<table class="table table-striped table-responsive" ng-show="vm.canShowValid">
+				<table class="table table-striped table-responsive" ng-show="statement.canShowValid">
 					<thead>
 						<tr>
 							<th>Transaction Reference</th>
@@ -48,13 +71,13 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="(reference, record) in vm.transactions">
+						<tr ng-repeat="(reference, record) in statement.validRecords">
 							<td>{{ reference }}</td>
 							<td>{{ record.description }}</td>
 						</tr>
 					</tbody>
 				</table>
-				<div class="block-alt block-valid" ng-show=" ! vm.canShowValid">
+				<div class="block-alt block-valid" ng-show=" ! statement.canShowValid">
 					No Records !
 				</div>
 			</div>
@@ -65,7 +88,7 @@
 			<div class="block-statements">
 				<h4 class="text-danger"><strong>Invalid Records</strong></h4>
 				<br/>
-				<table class="table table-striped table-responsive" ng-show="vm.errors.length">
+				<table class="table table-striped table-responsive" ng-show="statement.invalidRecords.length">
 					<thead>
 						<tr>
 							<th>Transaction Reference</th>
@@ -73,16 +96,16 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="record in vm.errors">
+						<tr ng-repeat="record in statement.invalidRecords">
 							<td>{{ record.reference }}</td>
 							<td>{{ record.description }}</td>
 						</tr>
 					</tbody>
 				</table>
-				<div class="block-alt block-invalid" ng-show=" ! vm.errors.length">
+				<div class="block-alt block-invalid" ng-show=" ! statement.invalidRecords.length">
 					No Records !
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
+</section>
